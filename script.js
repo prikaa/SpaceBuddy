@@ -186,6 +186,11 @@ const startBtn = $("start-btn");
 const exploreBtn = $("explore-btn");
 const missionBtn = $("mission-btn");
 const orbitBtn = $("orbit-btn");
+const spaceTechBtn = $("space-tech-btn");
+const spaceTechScreen = $("space-tech-screen");
+const spaceTechBackBtn = $("space-tech-back");
+const techLearnButtons = document.querySelectorAll(".tech-learn-btn");
+const techDetails = document.querySelectorAll(".tech-detail");
 const starCount = $("star-count");
 const bubble = $("speech-bubble");
 const repeatBtn = $("repeat-btn");
@@ -242,6 +247,8 @@ const missionExploreBtn = document.getElementById("mission-explore-btn");
 // STATE
 // =====================================================
 let mode = "explore";      // "explore" or "missions"
+let spaceTechOpen = false;
+let missionResultsWasVisible = false;
 let stars = 0;
 let missionQueue = [];
 let currentMission = null;
@@ -411,11 +418,18 @@ buildSolarSystem();
 // ORBITS: frozen when the kid asks, during Missions, and while zoomed in
 // =====================================================
 function updateOrbit() {
-  const frozen = userFrozen || mode === "missions" || !zoom.hidden;
+  const frozen =
+    userFrozen ||
+    mode === "missions" ||
+    !zoom.hidden ||
+    spaceTechOpen;
+
   solarSystem.classList.toggle("paused", frozen);
+
   orbitBtn.textContent = userFrozen ? "▶ Move" : "⏸ Freeze";
   orbitBtn.setAttribute("aria-pressed", userFrozen);
-  orbitBtn.hidden = mode === "missions"; // missions are always frozen
+
+  orbitBtn.hidden = mode === "missions";
 }
 
 orbitBtn.addEventListener("click", () => {
@@ -702,4 +716,126 @@ missionRetryBtn.addEventListener("click", () => {
 
 missionExploreBtn.addEventListener("click", () => {
   setMode("explore");
+});
+
+// =====================================================
+// SPACE TECH: PAGE NAVIGATION
+// =====================================================
+
+function openSpaceTech() {
+  if (spaceTechOpen) return;
+
+  // Remember whether the mission results were visible.
+  missionResultsWasVisible = !missionResults.hidden;
+
+  // Hide the mission results while viewing Space Tech.
+  missionResults.hidden = true;
+
+  // Switch from the solar system to the Space Tech page.
+  gameScreen.classList.remove("active");
+
+  spaceTechScreen.hidden = false;
+  spaceTechScreen.classList.add("active");
+
+  spaceTechOpen = true;
+
+  // Pause the solar system while Space Tech is open.
+  updateOrbit();
+
+  // Update the selected navigation button.
+  spaceTechBtn.classList.add("active");
+  spaceTechBtn.setAttribute("aria-pressed", "true");
+
+  // Announce the new page.
+  say("Welcome to Space Tech! Explore the technology that helps us learn about space.");
+}
+
+function closeSpaceTech() {
+  if (!spaceTechOpen) return;
+
+  // Hide the Space Tech page.
+  spaceTechScreen.classList.remove("active");
+  spaceTechScreen.hidden = true;
+
+  // Return to the existing game screen.
+  gameScreen.classList.add("active");
+
+  spaceTechOpen = false;
+
+  // Restore the Space Tech button's appearance.
+  spaceTechBtn.classList.remove("active");
+  spaceTechBtn.setAttribute("aria-pressed", "false");
+
+  // Restore the mission results if they were visible before.
+  missionResults.hidden = !missionResultsWasVisible;
+
+  // Resume or keep the solar system paused as appropriate.
+  updateOrbit();
+
+  // Give the user a suitable message when returning.
+  if (missionResultsWasVisible) {
+    // Keep the mission results visible without replacing them.
+    return;
+  }
+
+  if (mode === "missions" && currentMission && !missionRoundFinished) {
+    say(
+      `Question ${missionNumber} of 10: ${currentMission.prompt}`
+    );
+  } else {
+    say("Welcome back! Tap any planet to visit it.");
+  }
+}
+
+
+// Open Space Tech from the navigation bar.
+spaceTechBtn.addEventListener("click", openSpaceTech);
+
+// Return to the solar system.
+spaceTechBackBtn.addEventListener("click", closeSpaceTech);
+
+
+// =====================================================
+// SPACE TECH: LEARN MORE BUTTONS
+// =====================================================
+
+techLearnButtons.forEach(button => {
+  button.addEventListener("click", () => {
+    const techName = button.dataset.tech;
+
+    // Find the matching detail panel.
+    const targetId = `tech-detail-${techName}`;
+    const targetDetail = $(targetId);
+
+    if (!targetDetail) {
+      console.warn(`Space Tech detail panel not found: ${targetId}`);
+      return;
+    }
+
+    // Hide all detail panels first.
+    techDetails.forEach(detail => {
+      detail.hidden = true;
+    });
+
+    // Show the selected detail panel.
+    targetDetail.hidden = false;
+
+    // Read the first paragraph aloud, if one exists.
+    const paragraph = targetDetail.querySelector("p");
+
+    if (paragraph && paragraph.textContent.trim()) {
+      const heading = targetDetail.querySelector("h2, h3");
+      const headingText = heading
+        ? `${heading.textContent.trim()}. `
+        : "";
+
+      say(`${headingText}${paragraph.textContent.trim()}`);
+    }
+
+    // Move the selected information into view.
+    targetDetail.scrollIntoView({
+      behavior: reducedMotion ? "auto" : "smooth",
+      block: "nearest"
+    });
+  });
 });

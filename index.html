@@ -23,6 +23,7 @@
       <div class="mode-buttons">
         <button id="explore-btn" class="mode-btn active" aria-pressed="true">🔭 Explore</button>
         <button id="mission-btn" class="mode-btn" aria-pressed="false">🎯 Missions</button>
+        <button id="space-tech-btn" class="mode-btn" aria-pressed="false">🚀 Space Tech</button>
         <button id="orbit-btn" class="mode-btn" aria-pressed="false">⏸ Freeze</button>
       </div>
       <div id="star-count" aria-live="polite">⭐ 0</div>
@@ -37,6 +38,202 @@
     <!-- Sun, orbit rings, and planets are added by script.js -->
     <div id="solar-system"></div>
   </section>
+
+  <!-- NEW: SPACE TECH SCREEN -->
+  <section id="space-tech-screen" class="screen" hidden>
+
+    <header class="space-tech-header">
+
+      <button id="space-tech-back" class="big-btn alt">
+        ← Back to Explore
+      </button>
+
+      <p class="space-tech-eyebrow">
+        DISCOVER THE UNIVERSE
+      </p>
+
+      <h1>Space Technology 🚀</h1>
+
+      <p class="space-tech-intro">
+        Discover the amazing technology that helps us explore space.
+      </p>
+
+    </header>
+
+    <!-- TECHNOLOGY CARDS -->
+    <div class="space-tech-grid">
+
+      <!-- CARD 1: TELESCOPES -->
+      <article class="tech-card">
+
+        <div class="tech-card-icon" aria-hidden="true">
+          🔭
+        </div>
+
+        <p class="tech-card-category">
+          OBSERVATION
+        </p>
+
+        <h2>Telescopes</h2>
+
+        <p>
+          Telescopes help scientists observe distant stars,
+          galaxies, and other objects in space.
+        </p>
+
+        <button
+          class="tech-learn-btn"
+          data-tech="telescope"
+          aria-expanded="false"
+          aria-controls="tech-detail-telescope"
+        >
+          Learn More
+        </button>
+
+        <div
+          id="tech-detail-telescope"
+          class="tech-detail"
+          hidden
+        >
+
+          <h3>Meet the James Webb Space Telescope!</h3>
+
+          <p>
+            The James Webb Space Telescope observes the universe
+            using infrared light. It helps scientists study distant
+            galaxies and learn more about how stars and planets form.
+          </p>
+
+        </div>
+
+      </article>
+
+      <!-- CARD 2: ROCKETS -->
+      <article class="tech-card">
+
+        <div class="tech-card-icon" aria-hidden="true">
+          🚀
+        </div>
+
+        <p class="tech-card-category">
+          SPACE TRANSPORTATION
+        </p>
+
+        <h2>Rockets</h2>
+
+        <p>
+          Rockets carry satellites, spacecraft, and scientific
+          instruments from Earth into space.
+        </p>
+
+        <button
+          class="tech-learn-btn"
+          data-tech="rocket"
+          aria-expanded="false"
+          aria-controls="tech-detail-rocket"
+        >
+          Learn More
+        </button>
+
+        <div
+          id="tech-detail-rocket"
+          class="tech-detail"
+          hidden
+        >
+
+          <h3>How Do Rockets Help Us?</h3>
+
+          <p>
+            Rockets produce thrust to overcome Earth's gravity.
+            They can carry spacecraft toward the Moon, other planets,
+            and destinations beyond Earth.
+          </p>
+
+        </div>
+
+      </article>
+
+      <!-- CARD 3: SATELLITES -->
+      <article class="tech-card">
+
+        <div class="tech-card-icon" aria-hidden="true">
+          🛰️
+        </div>
+
+        <p class="tech-card-category">
+          CONNECTING EARTH
+        </p>
+
+        <h2>Satellites</h2>
+
+        <p>
+          Satellites orbit Earth and help us with navigation,
+          weather forecasting, communication, and observing our planet.
+        </p>
+
+        <button
+          class="tech-learn-btn"
+          data-tech="satellite"
+          aria-expanded="false"
+          aria-controls="tech-detail-satellite"
+        >
+          Learn More
+        </button>
+
+        <div
+          id="tech-detail-satellite"
+          class="tech-detail"
+          hidden
+        >
+
+          <h3>Satellites Are Everywhere!</h3>
+
+          <p>
+            Satellites help navigation systems estimate locations,
+            allow communication over long distances, and collect
+            information about Earth's weather and environment.
+          </p>
+
+        </div>
+
+      </article>
+
+    </div>
+
+    <!-- SPACE JUNK INTRODUCTION -->
+    <section class="space-junk-intro">
+
+      <div class="space-junk-icon" aria-hidden="true">
+        🌍
+      </div>
+
+      <div class="space-junk-content">
+
+        <p class="space-tech-eyebrow">
+          THINK ABOUT THE FUTURE
+        </p>
+
+        <h2>What Happens When Satellites Stop Working?</h2>
+
+        <p>
+          Space technology helps us explore the universe, but old
+          satellites and leftover rocket parts can remain in orbit.
+          This is known as space junk.
+        </p>
+
+        <p class="space-junk-question">
+          Can we keep space clean while continuing to explore it?
+        </p>
+
+      </div>
+
+    </section>
+
+  </section>
+  <!-- END OF SPACE TECH SCREEN -->
+
+  <!-- ZOOM VIEW: opens when a planet is tapped in Explore mode -->
+  <div id="zoom" class="zoom" hidden>
 
   <!-- ZOOM VIEW: opens when a planet is tapped in Explore mode -->
   <div id="zoom" class="zoom" hidden>
