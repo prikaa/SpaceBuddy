@@ -58,6 +58,14 @@
   let rafId = null;
   let lines = {}; // what Astro says on each tab
 
+  // Real Earth image (same one the zoom view uses). If it's missing,
+  // we draw the plain blue Earth instead.
+  const earthImg = new Image();
+  let earthImgReady = false;
+  earthImg.onload = () => { earthImgReady = true; };
+  earthImg.src = "textures/earth.jpg";
+  let earthSpin = 0; // how far the surface has scrolled (0 to 1)
+
   // Only show the button when Earth is the zoomed planet.
   document.addEventListener("zoom-open", e => {
     junkBtn.hidden = e.detail.name !== "Earth";
@@ -122,17 +130,50 @@
     }
   }
 
+  function drawEarth(c, dt) {
+    ctx.save();
+    ctx.beginPath();
+    ctx.arc(c, c, earthR, 0, Math.PI * 2);
+    ctx.clip(); // everything below stays inside the circle
+
+    if (earthImgReady) {
+      // The image is a flat world map (2:1). Slide it sideways and draw it
+      // twice so it wraps around, which makes Earth look like it's spinning.
+      earthSpin = (earthSpin + dt / 14) % 1; // one turn every 14 s, like the planet view
+      const h = earthR * 2;
+      const w = h * 2;
+      const x = c - earthR - w + earthSpin * w;
+      ctx.drawImage(earthImg, x, c - earthR, w, h);
+      ctx.drawImage(earthImg, x + w, c - earthR, w, h);
+    } else {
+      const g = ctx.createRadialGradient(c - earthR * 0.3, c - earthR * 0.3, earthR * 0.2, c, c, earthR);
+      g.addColorStop(0, "#5bb0ff");
+      g.addColorStop(1, "#1f5fbf");
+      ctx.fillStyle = g;
+      ctx.fillRect(c - earthR, c - earthR, earthR * 2, earthR * 2);
+    }
+
+    // Light and shadow on top, so it looks round (same as the planets).
+    const shine = ctx.createRadialGradient(c - earthR * 0.35, c - earthR * 0.45, 0, c - earthR * 0.35, c - earthR * 0.45, earthR * 0.9);
+    shine.addColorStop(0, "rgba(255, 255, 255, 0.35)");
+    shine.addColorStop(1, "rgba(255, 255, 255, 0)");
+    ctx.fillStyle = shine;
+    ctx.fillRect(c - earthR, c - earthR, earthR * 2, earthR * 2);
+
+    const shade = ctx.createRadialGradient(c, c, earthR * 0.5, c, c, earthR);
+    shade.addColorStop(0, "rgba(0, 0, 0, 0)");
+    shade.addColorStop(1, "rgba(0, 0, 0, 0.5)");
+    ctx.fillStyle = shade;
+    ctx.fillRect(c - earthR, c - earthR, earthR * 2, earthR * 2);
+
+    ctx.restore();
+  }
+
   function draw(dt) {
     const c = canvasW / 2;
     ctx.clearRect(0, 0, canvasW, canvasW);
 
-    const g = ctx.createRadialGradient(c - earthR * 0.3, c - earthR * 0.3, earthR * 0.2, c, c, earthR);
-    g.addColorStop(0, "#5bb0ff");
-    g.addColorStop(1, "#1f5fbf");
-    ctx.fillStyle = g;
-    ctx.beginPath();
-    ctx.arc(c, c, earthR, 0, Math.PI * 2);
-    ctx.fill();
+    drawEarth(c, dt);
 
     for (const d of dots) {
       d.angle -= d.speed * dt; // counterclockwise

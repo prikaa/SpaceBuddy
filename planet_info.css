@@ -1,0 +1,34 @@
+/* ===== Planet info + textures + zoomable Sun (planet-info.js) ===== */
+
+/* Smaller planet in the zoom view so the info cards fit on a laptop screen */
+.zoom-card #zoom-orb { --px: min(48vw, 30vh, 280px); }
+
+/* Info cards */
+.zoom-stats {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
+  max-width: 620px;
+  margin: 0;
+}
+.zoom-stats div {
+  min-width: 110px;
+  padding: 8px 12px;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.1);
+}
+.zoom-stats dt {
+  font-size: 0.72rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  opacity: 0.75;
+}
+.zoom-stats dd { margin: 0; font-size: 1rem; font-weight: 700; }
+
+/* The Sun: same spinning surface as planets, plus a glow */
+.sun-btn { --px: calc(var(--S) * 0.13); }
+.sun-orb { box-shadow: 0 0 40px 12px rgba(255, 183, 3, 0.55); }
+#zoom-orb.sun-orb { box-shadow: 0 0 80px 24px rgba(255, 183, 3, 0.6); }
+
+.zoom-credit { font-size: 0.75rem; opacity: 0.6; }
