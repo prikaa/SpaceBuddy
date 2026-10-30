@@ -8,6 +8,9 @@ desktop.ini
 .idea/
 *.swp
 
+#Data files
+analysis/satcat.csv
+
 #Scratch/ personal files
 notes-private.txt
 *.log

@@ -42,10 +42,12 @@ Planet facts checked against [NASA Space Place](https://spaceplace.nasa.gov/).
 
 ## Team
 
-- Name: role
+- Name: Chanphourika Yeap
 - Name: role
 - Name: role
 
 ## Built with help from
+Starter code generated with claude, then customized by our team.
+Planet images: [Solar System Scope](https://www.solarsystemscope.com/textures/) (CC BY 4.0)
 
 <!-- Fill in honestly, e.g. "Starter code generated with Claude, then customized by our team." Check your hackathon's rules on AI disclosure. -->
