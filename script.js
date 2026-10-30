@@ -124,14 +124,56 @@ const ORBIT_SECONDS_PER_ROOT_YEAR = 30;
 const SUN_FACT = "This is the Sun! It is a star, not a planet. It gives us light and keeps us warm.";
 
 const MISSIONS = [
-  { prompt: "Can you find the biggest planet? Tap it!", answer: "Jupiter", hint: "Look for the biggest one of all!" },
-  { prompt: "Can you find the planet with big, bright rings?", answer: "Saturn", hint: "Look for the planet wearing rings, like a hula hoop!" },
-  { prompt: "Can you find the Red Planet?", answer: "Mars", hint: "Look for a small reddish planet!" },
-  { prompt: "Can you find our home planet?", answer: "Earth", hint: "Look for the blue and green planet!" },
-  { prompt: "Can you find the planet closest to the Sun?", answer: "Mercury", hint: "It is on the very first ring, right next to the Sun!" },
-  { prompt: "Can you find the hottest planet?", answer: "Venus", hint: "It is on the second ring from the Sun!" },
-  { prompt: "Can you find the planet that rolls on its side?", answer: "Uranus", hint: "Watch closely. One planet is rolling up and down instead of sideways!" },
-  { prompt: "Can you find the planet farthest from the Sun?", answer: "Neptune", hint: "It is on the very outside ring!" }
+  {
+    prompt: "Can you find the biggest planet?",
+    answer: "Jupiter",
+    hint: "Look for the biggest planet in the solar system!"
+  },
+  {
+    prompt: "Can you find the planet with beautiful rings?",
+    answer: "Saturn",
+    hint: "Look for the planet with a large ring system!"
+  },
+  {
+    prompt: "Can you find the Red Planet?",
+    answer: "Mars",
+    hint: "Look for the small reddish planet!"
+  },
+  {
+    prompt: "Can you find our home planet?",
+    answer: "Earth",
+    hint: "Look for the blue and green planet!"
+  },
+  {
+    prompt: "Can you find the planet closest to the Sun?",
+    answer: "Mercury",
+    hint: "It is the first planet from the Sun!"
+  },
+  {
+    prompt: "Can you find the hottest planet?",
+    answer: "Venus",
+    hint: "It is the second planet from the Sun!"
+  },
+  {
+    prompt: "Can you find the planet that spins on its side?",
+    answer: "Uranus",
+    hint: "Look for the pale blue planet that rolls on its side!"
+  },
+  {
+    prompt: "Can you find the planet farthest from the Sun?",
+    answer: "Neptune",
+    hint: "Look for the planet on the outermost ring!"
+  },
+  {
+    prompt: "Which planet has the fastest winds?",
+    answer: "Neptune",
+    hint: "It is the blue planet farthest from the Sun!"
+  },
+  {
+    prompt: "Which planet has the Great Red Spot?",
+    answer: "Jupiter",
+    hint: "Look for the biggest planet with a giant storm!"
+  }
 ];
 
 // =====================================================
@@ -157,6 +199,45 @@ const closeZoomBtn = $("close-zoom");
 
 const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
+const missionResults = document.createElement("div");
+missionResults.id = "mission-results";
+missionResults.hidden = true;
+
+missionResults.innerHTML = `
+  <div class="mission-results-card" role="dialog"
+       aria-modal="true" aria-labelledby="mission-results-title">
+
+    <h2 id="mission-results-title">Mission Complete!</h2>
+
+    <div id="mission-grade" aria-label="Your star rating"></div>
+
+    <p id="mission-score"></p>
+
+    <h3 id="mission-wrong-title">Questions to Review</h3>
+
+    <ul id="mission-wrong-list"></ul>
+
+    <div id="mission-results-buttons">
+      <button id="mission-retry-btn" class="big-btn">
+        🔄 Play Again
+      </button>
+
+      <button id="mission-explore-btn" class="big-btn alt">
+        🔭 Back to Explore
+      </button>
+    </div>
+  </div>
+`;
+
+document.body.appendChild(missionResults);
+
+const missionGrade = document.getElementById("mission-grade");
+const missionScore = document.getElementById("mission-score");
+const missionWrongTitle = document.getElementById("mission-wrong-title");
+const missionWrongList = document.getElementById("mission-wrong-list");
+const missionRetryBtn = document.getElementById("mission-retry-btn");
+const missionExploreBtn = document.getElementById("mission-explore-btn");
+
 // =====================================================
 // STATE
 // =====================================================
@@ -164,7 +245,16 @@ let mode = "explore";      // "explore" or "missions"
 let stars = 0;
 let missionQueue = [];
 let currentMission = null;
-let busy = false;          // blocks taps while Astro celebrates
+let busy = false;
+
+// Mission round tracking
+let missionNumber = 0;
+let firstTryCorrect = 0;
+let wrongQuestions = [];
+let currentQuestionWrong = false;
+let answeredThisRound = 0;
+let missionRoundFinished = false;
+
 let userFrozen = false;    // kid pressed Freeze
 
 let zoomedPlanet = null;   // planet shown in the zoom view
@@ -420,57 +510,178 @@ function onPlanetTap(p, btn) {
 }
 
 function checkAnswer(name, bodyEl) {
-  if (busy || !currentMission) return;
+  if (busy || !currentMission || missionRoundFinished) return;
 
   if (name === currentMission.answer) {
     busy = true;
+
     animate(bodyEl, "correct");
-    addStar();
-    say(`Yes! That's ${name}! Great job!`, () => {
-      busy = false;
-      if (mode === "missions") nextMission();
-    });
+
+    // Only award a star if the first answer was correct.
+    if (!currentQuestionWrong) {
+      firstTryCorrect++;
+      addStar();
+    }
+
+    answeredThisRound++;
+
+    say(
+      !currentQuestionWrong
+        ? `Correct! That's ${name}! You earned a star!`
+        : `Correct! That's ${name}! Let's try the next question!`,
+      () => {
+        busy = false;
+
+        if (answeredThisRound >= 10) {
+          finishMissionRound();
+        } else {
+          nextMission();
+        }
+      }
+    );
+
   } else {
     animate(bodyEl, "wrong");
-    say(`Oops, that's ${name}. ${currentMission.hint}`);
+
+    // Record the question only once, when the first wrong answer happens.
+    if (!currentQuestionWrong) {
+      currentQuestionWrong = true;
+
+      wrongQuestions.push({
+        number: missionNumber,
+        question: currentMission.prompt,
+        answer: currentMission.answer
+      });
+    }
+
+    // Wrong answers never add stars.
+    say(`Not quite! ${currentMission.hint}`);
   }
 }
 
 // Called at the start and after each correct answer.
 function nextMission() {
-  if (missionQueue.length === 0) {
-    if (currentMission) {
-      // Just finished the last mission in the round
-      currentMission = null;
-      busy = true;
-      say("Wow! You finished every mission! You are a Galaxy Master!", () => {
-        busy = false;
-        if (mode === "missions") nextMission();
-      });
-      return;
-    }
-    missionQueue = shuffle([...MISSIONS]);
+  if (answeredThisRound >= 10) {
+    finishMissionRound();
+    return;
   }
+
+  if (missionQueue.length === 0) {
+    finishMissionRound();
+    return;
+  }
+
   currentMission = missionQueue.pop();
-  say(currentMission.prompt);
+  missionNumber = answeredThisRound + 1;
+  currentQuestionWrong = false;
+
+  say(
+    `Question ${missionNumber} of 10: ${currentMission.prompt}`
+  );
+}
+
+function finishMissionRound() {
+  if (missionRoundFinished) return;
+
+  missionRoundFinished = true;
+  busy = false;
+  currentMission = null;
+
+  // Stop the solar system while displaying the results.
+  solarSystem.classList.add("paused");
+
+  // Reset the star counter after the round has ended.
+  stars = 0;
+  starCount.textContent = "⭐ 0";
+
+  // Rating is based on questions answered correctly on the first try.
+  let rating = "";
+
+  if (firstTryCorrect <= 3) {
+    rating = "⭐";
+  } else if (firstTryCorrect <= 8) {
+    rating = "⭐⭐";
+  } else {
+    rating = "⭐⭐⭐";
+  }
+
+  missionGrade.textContent = rating;
+  missionScore.textContent =
+    `You answered ${firstTryCorrect} out of 10 questions correctly on your first try.`;
+
+  // Show every question that had a wrong first answer.
+  missionWrongList.replaceChildren();
+
+  if (wrongQuestions.length === 0) {
+    missionWrongTitle.textContent = "Perfect Round!";
+    
+    const item = document.createElement("li");
+    item.className = "no-mistakes";
+    item.textContent = "Amazing! You answered all 10 questions correctly on your first try!";
+    missionWrongList.appendChild(item);
+
+  } else {
+    missionWrongTitle.textContent = "Questions to Review";
+
+    wrongQuestions.forEach(itemData => {
+      const item = document.createElement("li");
+
+      const question = document.createElement("div");
+      question.className = "wrong-question";
+      question.textContent =
+        `Question ${itemData.number}: ${itemData.question}`;
+
+      const answer = document.createElement("div");
+      answer.className = "correct-answer";
+      answer.textContent =
+        `Correct answer: ${itemData.answer}`;
+
+      item.append(question, answer);
+      missionWrongList.appendChild(item);
+    });
+  }
+
+  missionResults.hidden = false;
+
+  say("Mission complete! Check your score and review the questions.");
 }
 
 function setMode(newMode) {
   mode = newMode;
   busy = false;
+
   exploreBtn.classList.toggle("active", mode === "explore");
   missionBtn.classList.toggle("active", mode === "missions");
+
   exploreBtn.setAttribute("aria-pressed", mode === "explore");
   missionBtn.setAttribute("aria-pressed", mode === "missions");
-  updateOrbit();
+
+  missionResults.hidden = true;
 
   if (mode === "explore") {
+    currentMission = null;
+    missionRoundFinished = false;
+    updateOrbit();
     say("Tap any planet to visit it!");
-  } else if (currentMission) {
-    say(currentMission.prompt); // pick up where they left off
-  } else {
-    nextMission();
+    return;
   }
+
+  // Start a fresh round of 10 questions.
+  stars = 0;
+  starCount.textContent = "⭐ 0";
+
+  missionQueue = shuffle([...MISSIONS]);
+  currentMission = null;
+
+  missionNumber = 0;
+  firstTryCorrect = 0;
+  wrongQuestions = [];
+  currentQuestionWrong = false;
+  answeredThisRound = 0;
+  missionRoundFinished = false;
+
+  updateOrbit();
+  nextMission();
 }
 
 // =====================================================
@@ -485,3 +696,10 @@ startBtn.addEventListener("click", () => {
 exploreBtn.addEventListener("click", () => setMode("explore"));
 missionBtn.addEventListener("click", () => setMode("missions"));
 repeatBtn.addEventListener("click", () => say(lastSpoken, lastOnDone));
+missionRetryBtn.addEventListener("click", () => {
+  setMode("missions");
+});
+
+missionExploreBtn.addEventListener("click", () => {
+  setMode("explore");
+});

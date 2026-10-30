@@ -383,3 +383,104 @@ h1 {
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation: none !important; transition: none !important; }
 }
+
+/* ===== Mission Results ===== */
+#mission-results {
+  position: fixed;
+  inset: 0;
+  z-index: 20;
+  display: grid;
+  place-items: center;
+  padding: 20px;
+  overflow-y: auto;
+  background: rgba(5, 8, 30, 0.96);
+}
+
+#mission-results[hidden] {
+  display: none !important;
+}
+
+.mission-results-card {
+  width: 100%;
+  max-width: 680px;
+  margin: auto;
+  padding: 28px;
+  border: 2px solid rgba(255, 255, 255, 0.25);
+  border-radius: 24px;
+  background: linear-gradient(160deg, #20275b, #35205d);
+  color: #fff;
+  text-align: center;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.35);
+}
+
+.mission-results-card h2 {
+  margin-bottom: 12px;
+  color: var(--accent);
+  font-size: clamp(1.8rem, 6vw, 2.6rem);
+}
+
+#mission-grade {
+  margin: 12px 0;
+  font-size: clamp(2rem, 8vw, 3.5rem);
+}
+
+#mission-score {
+  margin-bottom: 20px;
+  font-size: 1.25rem;
+  line-height: 1.5;
+}
+
+#mission-wrong-title {
+  margin: 20px 0 12px;
+  font-size: 1.3rem;
+  text-align: left;
+}
+
+#mission-wrong-list {
+  display: grid;
+  gap: 12px;
+  margin: 0 0 24px;
+  padding: 0;
+  list-style: none;
+  text-align: left;
+}
+
+#mission-wrong-list li {
+  padding: 14px 16px;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.1);
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+}
+
+#mission-wrong-list .wrong-question {
+  font-weight: 700;
+  margin-bottom: 4px;
+}
+
+#mission-wrong-list .correct-answer {
+  color: #a7f3d0;
+}
+
+#mission-wrong-list .no-mistakes {
+  text-align: center;
+  font-size: 1.1rem;
+}
+
+#mission-results-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 12px;
+}
+
+@media (max-width: 600px) {
+  .mission-results-card {
+    padding: 20px 16px;
+  }
+
+  #mission-results-buttons .big-btn {
+    width: 100%;
+    padding: 14px 18px;
+  }
+}
