@@ -376,6 +376,7 @@ function openZoom(p, btn) {
   closeZoomBtn.focus({ preventScroll: true });
 
   say(`This is ${p.name}! ${p.facts[0]}`);
+    document.dispatchEvent(new CustomEvent("zoom-open", { detail: p })); // lets junk.js react
 }
 
 function closeZoom() {

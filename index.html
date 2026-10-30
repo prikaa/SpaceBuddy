@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>SpaceBuddy</title>
   <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="junk.css">
 </head>
 <body>
   <div id="stars-bg" aria-hidden="true"></div>
@@ -48,12 +49,50 @@
         <p id="zoom-fact"></p>
         <div class="zoom-actions">
           <button id="more-btn" class="big-btn small">🔊 Tell me more!</button>
+          <button id="junk-btn" class="big-btn small teal" hidden>🛰️ What's around Earth?</button>
           <button id="close-zoom" class="big-btn small alt">🚀 Back to space</button>
         </div>
       </div>
     </div>
   </div>
 
+    <!-- SPACE JUNK VIEW (junk.js): opens from Earth's zoom view -->
+  <div id="junk" class="junk" hidden>
+    <div class="junk-card" role="dialog" aria-modal="true" aria-labelledby="junk-title">
+      <h2 id="junk-title">🛰️ What's around Earth?</h2>
+      <p id="junk-stat" class="junk-stat"></p>
+
+      <div id="junk-details" class="junk-details">
+        <div class="junk-tabs" role="tablist" aria-label="Space junk views">
+          <button class="junk-tab" role="tab" id="tab-overview" data-tab="overview" aria-controls="panel-overview" aria-selected="true">🌍 Overview</button>
+          <button class="junk-tab" role="tab" id="tab-sources" data-tab="sources" aria-controls="panel-sources" aria-selected="false" tabindex="-1">💥 Biggest sources</button>
+          <button class="junk-tab" role="tab" id="tab-owners" data-tab="owners" aria-controls="panel-owners" aria-selected="false" tabindex="-1">🏳️ Who owns it</button>
+        </div>
+
+        <section id="panel-overview" class="junk-panel" role="tabpanel" aria-labelledby="tab-overview">
+          <canvas id="junk-canvas" aria-label="Animated picture of objects orbiting Earth"></canvas>
+          <p id="junk-scale" class="junk-note"></p>
+          <ul id="junk-legend" class="junk-legend"></ul>
+        </section>
+
+        <section id="panel-sources" class="junk-panel" role="tabpanel" aria-labelledby="tab-sources" hidden>
+          <ol id="junk-sources" class="junk-bars"></ol>
+          <p class="junk-note">Each bar is one launch whose objects broke into pieces that are still in orbit. We grouped pieces by the launch they came from, because the catalog dates every fragment by its parent's launch, not by the day it broke apart.</p>
+        </section>
+
+        <section id="panel-owners" class="junk-panel" role="tabpanel" aria-labelledby="tab-owners" hidden>
+          <ol id="junk-owners" class="junk-bars"></ol>
+          <p class="junk-note">Debris still in orbit, by who owned the object it came from.</p>
+        </section>
+
+        <p class="junk-note">Data: CelesTrak satellite catalog, analyzed by our team. Dot positions are for illustration, not real orbits.</p>
+      </div>
+
+      <button id="close-junk" class="big-btn small alt">🌍 Back to Earth</button>
+    </div>
+  </div>
+
   <script src="script.js"></script>
+  <script src="junk.js"></script>
 </body>
 </html>
