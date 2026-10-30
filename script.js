@@ -12,10 +12,11 @@ const CLOUD = "rgba(255, 255, 255, 0.75)";
 // size  = how big it looks (not to scale; real sizes would make Mercury invisible)
 // orbit = which ring (fraction of the solar system's width)
 // angle = where on the ring it sits, in degrees
+// year  = real time to go around the Sun, in Earth years
 // spin  = seconds per full turn (smaller = faster)
 const PLANETS = [
   {
-    name: "Mercury", size: 24, orbit: 0.22, angle: 300, spin: 40,
+    name: "Mercury", size: 24, orbit: 0.22, angle: 300, year: 0.24, spin: 40,
     surface: [
       spot(12, 30, 4, 8, "#8f8a82"), spot(34, 68, 5, 10, "#8f8a82"), spot(55, 35, 3, 6, "#8f8a82"),
       spot(76, 62, 4, 8, "#8f8a82"), spot(90, 28, 3, 6, "#8f8a82"), "#b9b3aa"
@@ -27,7 +28,7 @@ const PLANETS = [
     ]
   },
   {
-    name: "Venus", size: 32, orbit: 0.31, angle: 200, spin: 60, reverse: true,
+    name: "Venus", size: 32, orbit: 0.31, angle: 200, year: 0.62, spin: 60, reverse: true,
     surface: [
       spot(25, 40, 10, 14, "rgba(255, 244, 214, 0.8)"), spot(68, 62, 12, 16, "rgba(255, 244, 214, 0.7)"),
       spot(48, 20, 8, 8, "rgba(200, 140, 70, 0.5)"),
@@ -40,7 +41,7 @@ const PLANETS = [
     ]
   },
   {
-    name: "Earth", size: 34, orbit: 0.40, angle: 60, spin: 14,
+    name: "Earth", size: 34, orbit: 0.40, angle: 60, year: 1, spin: 14,
     surface: [
       spot(30, 22, 4, 7, CLOUD), spot(62, 78, 5, 8, CLOUD), spot(88, 38, 3, 6, CLOUD),
       "linear-gradient(#f4f8ff 0 7%, transparent 7% 93%, #f4f8ff 93%)",
@@ -54,7 +55,7 @@ const PLANETS = [
     ]
   },
   {
-    name: "Mars", size: 28, orbit: 0.49, angle: 150, spin: 15,
+    name: "Mars", size: 28, orbit: 0.49, angle: 150, year: 1.88, spin: 15,
     surface: [
       "linear-gradient(#fff 0 8%, transparent 8%)",
       spot(18, 50, 8, 16, "#8e2f0a"), spot(50, 38, 6, 12, "#9a3510"), spot(78, 60, 9, 14, "#8e2f0a"),
@@ -67,7 +68,7 @@ const PLANETS = [
     ]
   },
   {
-    name: "Jupiter", size: 64, orbit: 0.62, angle: 330, spin: 6,
+    name: "Jupiter", size: 64, orbit: 0.62, angle: 330, year: 11.86, spin: 6,
     surface: [
       spot(30, 64, 6, 7, "#c0452a"), spot(70, 40, 3, 4, "rgba(255, 255, 255, 0.6)"),
       "linear-gradient(#e8c9a0 0 20%, #c58a5a 20% 32%, #ead7b8 32% 50%, #b9774a 50% 60%, #e6c79d 60% 80%, #c58a5a 80%)"
@@ -79,7 +80,7 @@ const PLANETS = [
     ]
   },
   {
-    name: "Saturn", size: 54, orbit: 0.74, angle: 230, spin: 7, rings: true,
+    name: "Saturn", size: 54, orbit: 0.74, angle: 230, year: 29.46, spin: 7, rings: true,
     surface: [
       spot(40, 30, 4, 5, "rgba(255, 248, 225, 0.8)"), spot(80, 62, 3, 4, "rgba(255, 248, 225, 0.6)"),
       "linear-gradient(#f3e2b5 0 25%, #e0c385 25% 40%, #f0dba8 40% 60%, #d6b678 60% 75%, #f1dfb0 75%)"
@@ -91,7 +92,7 @@ const PLANETS = [
     ]
   },
   {
-    name: "Uranus", size: 40, orbit: 0.85, angle: 100, spin: 10, vertical: true,
+    name: "Uranus", size: 40, orbit: 0.85, angle: 100, year: 84, spin: 10, vertical: true,
     surface: [
       spot(70, 30, 10, 5, "rgba(255, 255, 255, 0.6)"),
       "linear-gradient(#b0ecf0 0 18%, #93d8df 18% 30%, #b0ecf0 30% 55%, #8fd3db 55% 66%, #b0ecf0 66%)"
@@ -103,7 +104,7 @@ const PLANETS = [
     ]
   },
   {
-    name: "Neptune", size: 38, orbit: 0.95, angle: 15, spin: 9,
+    name: "Neptune", size: 38, orbit: 0.95, angle: 15, year: 164.8, spin: 9,
     surface: [
       spot(35, 48, 7, 9, "#1f3a8a"), spot(62, 30, 8, 3, CLOUD), spot(80, 68, 6, 2.5, "rgba(255, 255, 255, 0.6)"),
       "linear-gradient(#5b8cff, #2f56c9)"
@@ -115,6 +116,10 @@ const PLANETS = [
     ]
   }
 ];
+
+// Orbit speed on screen: closer planets are faster (true order), but the gaps are
+// squished with a square root so Neptune still visibly moves.
+const ORBIT_SECONDS_PER_ROOT_YEAR = 30;
 
 const SUN_FACT = "This is the Sun! It is a star, not a planet. It gives us light and keeps us warm.";
 
@@ -138,6 +143,7 @@ const gameScreen = $("game-screen");
 const startBtn = $("start-btn");
 const exploreBtn = $("explore-btn");
 const missionBtn = $("mission-btn");
+const orbitBtn = $("orbit-btn");
 const starCount = $("star-count");
 const bubble = $("speech-bubble");
 const repeatBtn = $("repeat-btn");
@@ -159,6 +165,7 @@ let stars = 0;
 let missionQueue = [];
 let currentMission = null;
 let busy = false;          // blocks taps while Astro celebrates
+let userFrozen = false;    // kid pressed Freeze
 
 let zoomedPlanet = null;   // planet shown in the zoom view
 let zoomFrom = null;       // the small orb it zoomed out of
@@ -300,7 +307,8 @@ function buildSolarSystem() {
     btn.setAttribute("aria-label", p.name);
     btn.style.setProperty("--size", p.size);
     btn.style.setProperty("--orbit", p.orbit);
-    btn.style.setProperty("--a", `${p.angle}deg`);
+    btn.style.setProperty("--start", `${p.angle}deg`);
+    btn.style.setProperty("--year", `${ORBIT_SECONDS_PER_ROOT_YEAR * Math.sqrt(p.year)}s`);
     btn.innerHTML = `<span class="body"><span class="orb"></span></span><span class="name">${p.name}</span>`;
     setOrbLook(btn.querySelector(".orb"), p);
     btn.addEventListener("click", () => onPlanetTap(p, btn));
@@ -308,6 +316,25 @@ function buildSolarSystem() {
   });
 }
 buildSolarSystem();
+
+// =====================================================
+// ORBITS: frozen when the kid asks, during Missions, and while zoomed in
+// =====================================================
+function updateOrbit() {
+  const frozen = userFrozen || mode === "missions" || !zoom.hidden;
+  solarSystem.classList.toggle("paused", frozen);
+  orbitBtn.textContent = userFrozen ? "▶ Move" : "⏸ Freeze";
+  orbitBtn.setAttribute("aria-pressed", userFrozen);
+  orbitBtn.hidden = mode === "missions"; // missions are always frozen
+}
+
+orbitBtn.addEventListener("click", () => {
+  userFrozen = !userFrozen;
+  updateOrbit();
+  say(userFrozen
+    ? "Freeze! Now the planets stay still."
+    : "Watch! Planets closer to the Sun travel around it faster.");
+});
 
 // =====================================================
 // ZOOM VIEW
@@ -342,6 +369,7 @@ function openZoom(p, btn) {
   zoomFact.textContent = p.facts[0];
 
   zoom.hidden = false;
+  updateOrbit(); // stop orbiting so the planet can zoom back to the same spot
   document.body.classList.add("no-scroll");
   flip(zoomFrom, zoomOrb, false);
   requestAnimationFrame(() => zoom.classList.add("open"));
@@ -356,6 +384,7 @@ function closeZoom() {
   zoom.classList.remove("open");
   flip(backTo, zoomOrb, true, () => {
     zoom.hidden = true;
+    updateOrbit();
     zoomOrb.style.transform = "";
     document.body.classList.remove("no-scroll");
     backTo.closest("button").focus({ preventScroll: true });
@@ -433,6 +462,7 @@ function setMode(newMode) {
   missionBtn.classList.toggle("active", mode === "missions");
   exploreBtn.setAttribute("aria-pressed", mode === "explore");
   missionBtn.setAttribute("aria-pressed", mode === "missions");
+  updateOrbit();
 
   if (mode === "explore") {
     say("Tap any planet to visit it!");

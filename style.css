@@ -198,10 +198,25 @@ h1 {
 .planet {
   --px: calc(var(--S) * var(--size) / 800);   /* planet diameter */
   --r: calc(var(--orbit) * var(--S) / 2);      /* distance from Sun */
+  --a: var(--start);                           /* current angle on its ring */
   width: max(var(--px), 44px);                 /* big enough to tap */
   height: max(var(--px), 44px);
   transform: translate(-50%, -50%) rotate(var(--a)) translateX(var(--r)) rotate(calc(-1 * var(--a)));
+  animation: orbit var(--year) linear infinite;
 }
+
+/* Orbit: lets the browser animate the --a angle smoothly */
+@property --a {
+  syntax: "<angle>";
+  inherits: false;
+  initial-value: 0deg;
+}
+/* Counterclockwise, like the real solar system seen from above */
+@keyframes orbit {
+  from { --a: var(--start); }
+  to { --a: calc(var(--start) - 360deg); }
+}
+#solar-system.paused .planet { animation-play-state: paused; }
 
 .sun-btn {
   width: calc(var(--S) * 0.13);
