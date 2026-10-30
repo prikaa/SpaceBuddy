@@ -33,11 +33,25 @@
       <button id="repeat-btn" class="icon-btn" aria-label="Hear it again">🔊</button>
     </div>
 
-    <!-- Sun + planets (planets are added by script.js) -->
-    <div id="solar-system">
-      <button id="sun" class="sun" aria-label="The Sun"></button>
-    </div>
+    <!-- Sun, orbit rings, and planets are added by script.js -->
+    <div id="solar-system"></div>
   </section>
+
+  <!-- ZOOM VIEW: opens when a planet is tapped in Explore mode -->
+  <div id="zoom" class="zoom" hidden>
+    <div class="zoom-backdrop"></div>
+    <div class="zoom-card" role="dialog" aria-modal="true" aria-labelledby="zoom-name">
+      <span id="zoom-orb" class="orb"></span>
+      <div class="zoom-text">
+        <h2 id="zoom-name"></h2>
+        <p id="zoom-fact"></p>
+        <div class="zoom-actions">
+          <button id="more-btn" class="big-btn small">🔊 Tell me more!</button>
+          <button id="close-zoom" class="big-btn small alt">🚀 Back to space</button>
+        </div>
+      </div>
+    </div>
+  </div>
 
   <script src="script.js"></script>
 </body>

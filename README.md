@@ -1,4 +1,4 @@
-# AstroLearn
+# SpaceBuddy
 
 **A talking space adventure for kids ages 5–9. No reading required.**
 
@@ -48,4 +48,4 @@ Planet facts checked against [NASA Space Place](https://spaceplace.nasa.gov/).
 
 ## Built with help from
 
-<!--  Starter code generated with Claude, then customized by our team. -->
+<!-- Fill in honestly, e.g. "Starter code generated with Claude, then customized by our team." Check your hackathon's rules on AI disclosure. -->

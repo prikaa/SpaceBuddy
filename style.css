@@ -7,12 +7,14 @@
   --bubble: #ffffff;
   --bubble-text: #1b2140;
   --btn: #5b4bff;
+  --btn-shadow: #3a2fb8;
   --start: #ff8a3d;
   --start-shadow: #c95f1c;
-  --scale: 1; /* shrinks planets on small screens */
+  --ring: rgba(255, 255, 255, 0.18);
 }
 
 * { box-sizing: border-box; margin: 0; }
+[hidden] { display: none !important; }
 
 body {
   min-height: 100vh;
@@ -21,6 +23,7 @@ body {
   color: var(--text);
   overflow-x: hidden;
 }
+body.no-scroll { overflow: hidden; }
 
 button { font: inherit; cursor: pointer; }
 button:focus-visible { outline: 4px solid var(--accent); outline-offset: 4px; }
@@ -42,7 +45,7 @@ button:focus-visible { outline: 4px solid var(--accent); outline-offset: 4px; }
 }
 @keyframes twinkle { to { opacity: 0.35; } }
 
-/* Screens */
+/* ===== Screens ===== */
 .screen { display: none; position: relative; }
 .screen.active { display: flex; }
 
@@ -75,15 +78,18 @@ h1 {
   box-shadow: 0 6px 0 var(--start-shadow);
 }
 .big-btn:active { transform: translateY(4px); box-shadow: 0 2px 0 var(--start-shadow); }
+.big-btn.small { margin-top: 0; font-size: 1.2rem; padding: 14px 24px; }
+.big-btn.alt { background: var(--btn); box-shadow: 0 6px 0 var(--btn-shadow); }
+.big-btn.alt:active { box-shadow: 0 2px 0 var(--btn-shadow); }
 
-/* Astro the mascot */
+/* ===== Astro the mascot ===== */
 .astro { animation: float 3s ease-in-out infinite; }
 .astro svg { display: block; width: 100%; height: auto; }
 .astro.big { width: 160px; }
 .astro.small { width: 72px; flex-shrink: 0; }
 @keyframes float { 50% { transform: translateY(-8px); } }
 
-/* Game screen */
+/* ===== Game screen ===== */
 #game-screen {
   flex-direction: column;
   gap: 16px;
@@ -153,66 +159,134 @@ h1 {
   background: rgba(255, 255, 255, 0.15);
 }
 
-/* Solar system */
+/* ===== Solar system (square that scales to the screen) ===== */
 #solar-system {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: center;
-  gap: 12px 18px;
-  padding: 20px 8px;
+  --S: max(300px, min(94vw, calc(100vh - 210px), 860px)); /* overall size */
+  position: relative;
+  width: var(--S);
+  height: var(--S);
+  margin: 8px auto 24px;
 }
 
-.sun {
-  width: calc(130px * var(--scale));
+.ring {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: calc(var(--orbit) * var(--S));
   aspect-ratio: 1;
+  transform: translate(-50%, -50%);
+  border: 1.5px dashed var(--ring);
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+/* Every planet sits at the center, then rotates out to its ring at --a degrees */
+.planet,
+.sun-btn {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  display: grid;
+  place-items: center;
+  padding: 0;
   border: none;
   border-radius: 50%;
-  background: radial-gradient(circle at 40% 40%, #fff3b0, #ffb703 45%, #fb8500);
-  box-shadow: 0 0 40px 10px rgba(255, 183, 3, 0.55);
-}
-
-.planet {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 8px;
-  min-width: 64px;
-  padding: 8px;
-  border: none;
-  border-radius: 16px;
   background: none;
   color: var(--text);
 }
 
-.orb {
-  position: relative;
+.planet {
+  --px: calc(var(--S) * var(--size) / 800);   /* planet diameter */
+  --r: calc(var(--orbit) * var(--S) / 2);      /* distance from Sun */
+  width: max(var(--px), 44px);                 /* big enough to tap */
+  height: max(var(--px), 44px);
+  transform: translate(-50%, -50%) rotate(var(--a)) translateX(var(--r)) rotate(calc(-1 * var(--a)));
+}
+
+.sun-btn {
+  width: calc(var(--S) * 0.13);
+  height: calc(var(--S) * 0.13);
+  transform: translate(-50%, -50%);
+}
+
+.body { display: grid; place-items: center; }
+
+.sun {
   display: block;
-  width: calc(var(--size) * 1px * var(--scale));
+  width: calc(var(--S) * 0.13);
   aspect-ratio: 1;
   border-radius: 50%;
-  background: var(--bg);
-  box-shadow: inset -8px -8px 16px rgba(0, 0, 0, 0.35), 0 0 12px rgba(255, 255, 255, 0.15);
-  transition: transform 0.2s;
+  background: radial-gradient(circle at 40% 40%, #fff3b0, #ffb703 45%, #fb8500);
+  box-shadow: 0 0 40px 12px rgba(255, 183, 3, 0.55);
 }
-.planet:hover .orb { transform: scale(1.08); }
+
+.name {
+  position: absolute;
+  top: calc(100% + 2px);
+  left: 50%;
+  transform: translateX(-50%);
+  white-space: nowrap;
+  font-size: 0.85rem;
+  font-weight: 700;
+  pointer-events: none;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8);
+}
+
+/* ===== Planet surfaces + spin ===== */
+.orb {
+  --tile: calc(var(--px) * 2);
+  position: relative;
+  display: block;
+  width: var(--px);
+  height: var(--px);
+  border-radius: 50%;
+  background: var(--surface);
+  background-size: var(--tile) 100%;
+  background-repeat: repeat-x;
+  box-shadow: 0 0 14px rgba(255, 255, 255, 0.15);
+  animation: spin-x var(--spin) linear infinite;
+  transition: filter 0.2s;
+}
+.orb.vertical {                       /* Uranus rolls on its side */
+  background-size: 100% var(--tile);
+  background-repeat: repeat-y;
+  animation-name: spin-y;
+}
+.orb.reverse { animation-direction: reverse; }  /* Venus spins backwards */
+
+@keyframes spin-x { to { background-position: var(--tile) 0; } }
+@keyframes spin-y { to { background-position: 0 var(--tile); } }
+
+/* Light + shadow that stays still while the surface moves = looks 3D */
+.orb::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background:
+    radial-gradient(circle at 32% 28%, rgba(255, 255, 255, 0.35), transparent 45%),
+    radial-gradient(circle at 50% 50%, transparent 50%, rgba(0, 0, 0, 0.5) 100%);
+  pointer-events: none;
+}
 
 /* Saturn's rings */
 .orb.rings::after {
   content: "";
   position: absolute;
-  width: 170%;
-  height: 38%;
-  left: -35%;
-  top: 31%;
-  border: 5px solid rgba(230, 205, 150, 0.85);
+  width: 180%;
+  height: 40%;
+  left: -40%;
+  top: 30%;
+  border: calc(var(--px) * 0.07) solid rgba(230, 205, 150, 0.8);
   border-radius: 50%;
   transform: rotate(-18deg);
+  pointer-events: none;
 }
 
-.name { font-size: 1.05rem; font-weight: 700; }
+.planet:hover .orb,
+.sun-btn:hover .sun { filter: brightness(1.2); }
 
-/* Feedback animations */
+/* ===== Feedback animations (on .body so they don't fight positioning) ===== */
 .bounce { animation: bounce 0.6s; }
 .wrong { animation: shake 0.5s; }
 .correct { animation: bounce 0.6s, glow 1s; }
@@ -226,10 +300,69 @@ h1 {
 @keyframes glow { 50% { filter: drop-shadow(0 0 16px var(--accent)); } }
 @keyframes pop { 50% { transform: scale(1.3); } }
 
-/* Phones */
+/* ===== Zoom view ===== */
+.zoom {
+  position: fixed;
+  inset: 0;
+  z-index: 10;
+  display: grid;
+  place-items: center;
+  padding: 16px;
+  overflow-y: auto;
+}
+.zoom-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(5, 8, 30, 0.96);
+  opacity: 0;
+  transition: opacity 0.4s;
+}
+.zoom.open .zoom-backdrop { opacity: 1; }
+
+.zoom-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  width: 100%;
+  max-width: 640px;
+  text-align: center;
+}
+
+#zoom-orb {
+  --px: min(60vw, 42vh, 340px);
+  margin: 10px 0;
+  box-shadow: 0 0 60px rgba(255, 255, 255, 0.2);
+}
+
+.zoom-text {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  opacity: 0;
+  transform: translateY(12px);
+  transition: opacity 0.4s 0.35s, transform 0.4s 0.35s;
+}
+.zoom.open .zoom-text { opacity: 1; transform: none; }
+
+#zoom-name {
+  font-size: clamp(2rem, 7vw, 3rem);
+  color: var(--accent);
+  text-shadow: 0 3px 0 rgba(0, 0, 0, 0.35);
+}
+#zoom-fact {
+  max-width: 32ch;
+  font-size: clamp(1.15rem, 3.2vw, 1.5rem);
+  line-height: 1.4;
+}
+.zoom-actions { display: flex; flex-wrap: wrap; justify-content: center; gap: 14px; margin-top: 6px; }
+
+/* ===== Phones ===== */
 @media (max-width: 600px) {
-  :root { --scale: 0.62; }
   .astro.small { width: 56px; }
+  .name { display: none; }  /* too crowded; Astro says the names anyway */
 }
 
 @media (prefers-reduced-motion: reduce) {
