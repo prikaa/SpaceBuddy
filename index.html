@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>AstroLearn</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div id="stars-bg" aria-hidden="true"></div>
+
+  <!-- START SCREEN: the first tap here also unlocks Astro's voice -->
+  <section id="start-screen" class="screen active">
+    <div class="astro big" aria-hidden="true"></div>
+    <h1>AstroLearn</h1>
+    <p class="subtitle">Explore space with Astro!</p>
+    <button id="start-btn" class="big-btn">🚀 Start Exploring!</button>
+  </section>
+
+  <!-- GAME SCREEN -->
+  <section id="game-screen" class="screen">
+    <header class="top-bar">
+      <div class="mode-buttons">
+        <button id="explore-btn" class="mode-btn active" aria-pressed="true">🔭 Explore</button>
+        <button id="mission-btn" class="mode-btn" aria-pressed="false">🎯 Missions</button>
+      </div>
+      <div id="star-count" aria-live="polite">⭐ 0</div>
+    </header>
+
+    <div class="guide">
+      <div class="astro small" aria-hidden="true"></div>
+      <div id="speech-bubble" class="bubble" aria-live="polite">Tap a planet to learn about it!</div>
+      <button id="repeat-btn" class="icon-btn" aria-label="Hear it again">🔊</button>
+    </div>
+
+    <!-- Sun + planets (planets are added by script.js) -->
+    <div id="solar-system">
+      <button id="sun" class="sun" aria-label="The Sun"></button>
+    </div>
+  </section>
+
+  <script src="script.js"></script>
+</body>
+</html>
