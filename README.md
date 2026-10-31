@@ -75,7 +75,7 @@ Plain HTML, CSS, and JavaScript with no frameworks or build step. Astro's voice 
 | `index.html` | Page structure: start screen, Astro, solar system, zoom view, Space Tech |
 | `style.css` | Space theme, planets, orbits, animations |
 | `script.js` | Planets, missions, Space Tech, zoom view, and Astro's voice |
-| `planet-info.js` / `.css` | Real planet stats, facts, surface images, and the zoomable Sun |
+| `planet_info.js` / `.css` | Real planet stats, facts, surface images, and the zoomable Sun |
 | `junk.js` / `.css` | The "What's around Earth?" data view |
 | `cleanup.js` / `.css` | The Protect Space page |
 | `analysis/analyze_debris.py` | Data analysis (Python + pandas) |
