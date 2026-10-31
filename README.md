@@ -19,7 +19,7 @@ Astro, a friendly astronaut, **speaks** every fact and challenge out loud. Kids 
 - **What's around Earth?** (zoom into Earth): an animated view of every tracked object around Earth, built from real satellite catalog data, with tabs for the biggest debris sources and who owns the debris.
 - **Protect Space:** *What happens if we don't protect Earth's orbit?* What space junk is, why it's dangerous (including the Kessler Syndrome), and four ways people are protecting orbit.
 - **Space Tech:** telescopes, rockets, and satellites, and how they help us explore.
-- **⏸ Freeze:** stops the orbits so younger kids can tap planets easily. Orbits also freeze automatically during Missions.
+- **Freeze:** stops the orbits so younger kids can tap planets easily. Orbits also freeze automatically during Missions.
 
 Built for young kids: no accounts, no ads, and no personal information collected.
 
