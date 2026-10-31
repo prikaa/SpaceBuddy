@@ -2,7 +2,7 @@
 
 **A talking space adventure for kids ages 5–9, but all ages welcome. No reading required.**
 
-🔗 **Live demo:** https://prikaa.github.io/SpaceBuddy/
+**Live demo:** https://prikaa.github.io/SpaceBuddy/
 
 ## The problem
 
@@ -14,11 +14,11 @@ There's a second, less-known problem in space itself: thousands of dead satellit
 
 Astro, a friendly astronaut, **speaks** every fact and challenge out loud. Kids learn by **tapping**, not reading.
 
-- **🔭 Explore:** planets orbit the Sun (closer planets move faster, like the real ones) and spin with real surface images. Venus spins backwards, and Uranus rolls on its side. Tap any planet or the Sun to zoom in, see real stats, and hear facts.
-- **🎯 Missions:** 10-question rounds like *"Can you find the planet with beautiful rings?"* Kids tap the answer, earn stars for first-try answers, get spoken hints when they guess wrong, and review missed questions at the end.
-- **🛰️ What's around Earth?** (zoom into Earth): an animated view of every tracked object around Earth, built from real satellite catalog data, with tabs for the biggest debris sources and who owns the debris.
-- **🛡️ Protect Space:** *What happens if we don't protect Earth's orbit?* What space junk is, why it's dangerous (including the Kessler Syndrome), and four ways people are protecting orbit.
-- **🚀 Space Tech:** telescopes, rockets, and satellites, and how they help us explore.
+- **Explore:** planets orbit the Sun (closer planets move faster, like the real ones) and spin with real surface images. Venus spins backwards, and Uranus rolls on its side. Tap any planet or the Sun to zoom in, see real stats, and hear facts.
+- **Missions:** 10-question rounds like *"Can you find the planet with beautiful rings?"* Kids tap the answer, earn stars for first-try answers, get spoken hints when they guess wrong, and review missed questions at the end.
+- **What's around Earth?** (zoom into Earth): an animated view of every tracked object around Earth, built from real satellite catalog data, with tabs for the biggest debris sources and who owns the debris.
+- **Protect Space:** *What happens if we don't protect Earth's orbit?* What space junk is, why it's dangerous (including the Kessler Syndrome), and four ways people are protecting orbit.
+- **Space Tech:** telescopes, rockets, and satellites, and how they help us explore.
 - **⏸ Freeze:** stops the orbits so younger kids can tap planets easily. Orbits also freeze automatically during Missions.
 
 Built for young kids: no accounts, no ads, and no personal information collected.
@@ -92,9 +92,10 @@ Most content (facts, missions, cards) lives in lists at the top of each file, so
 
 ## Team
 
-- Chanphourika Yeap: role
-- Name: role
-- Name: role
+- Chanphourika, Yeap: HTML, CSS, JAVASCRIPT
+- Ching Yee Dorothy, Chaung: HTML, CSS, JAVASCRIPT
+- Alley,Zheng: Research, Content, Scriptwriter
+- Xinling Fang: Research, Content, Scriptwriter
 
 ## Built with help from
 
