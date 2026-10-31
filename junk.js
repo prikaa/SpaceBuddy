@@ -8,6 +8,17 @@
   const DATA_URL = "analysis/debris_summary.json";
   const MAX_DOTS = 400; // more dots than this gets slow and cluttered
 
+  // Orbit zones (from analyze_debris.py). r = band on the canvas, in Earth radii.
+  // Distances are squished so everything fits: NOT to scale.
+  // lap = seconds per trip around Earth on screen (closer = faster, in true order).
+  const ZONES = {
+    LEO: { name: "Low Earth orbit (LEO)", desc: "below 2,000 km", r: [1.15, 1.6], lap: 6, ring: "LEO" },
+    MEO: { name: "Medium Earth orbit (MEO)", desc: "2,000 to about 35,000 km", r: [1.85, 2.55], lap: 10, ring: "MEO" },
+    GEO: { name: "Geostationary orbit (GEO)", desc: "about 35,800 km", r: [2.95, 3.08], lap: 14, ring: "GEO" },
+    "High / elliptical": { name: "High or stretched orbits", desc: "swing from low to very high", r: [1.2, 3.35], lap: 12 }
+  };
+  let showRings = false;
+
   // One color per group. Debris is red on purpose: it's the problem.
   const GROUPS = {
     working: { label: "Working satellites", color: "#4ade80" },
@@ -49,6 +60,9 @@
   const ownersEl = $("junk-owners");
   const scaleEl = $("junk-scale");
   const tabs = [...junk.querySelectorAll(".junk-tab")];
+  const zonesEl = document.createElement("ul");
+  zonesEl.className = "junk-zones";
+  legendEl.after(zonesEl);
   const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
   let data = null;
@@ -130,6 +144,55 @@
     }
   }
 
+  // Place each dot in its REAL orbit zone (data from by_zone).
+  function makeZoneDots(byZone, perDot) {
+    earthR = canvasW * 0.14;
+    dots = [];
+    for (const [zoneName, z] of Object.entries(byZone)) {
+      const zone = ZONES[zoneName];
+      if (!zone) continue; // "Unknown" zone: no altitude data, so no dot position
+      const zoneCounts = {
+        working: z.working || 0,
+        dead: Math.max((z.Satellites || 0) - (z.working || 0), 0),
+        "Rocket bodies": z["Rocket bodies"] || 0,
+        Debris: z.Debris || 0,
+        Unknown: z.Unknown || 0
+      };
+      for (const [key, n] of Object.entries(zoneCounts)) {
+        const howMany = Math.round(n / perDot);
+        for (let i = 0; i < howMany; i++) {
+          const [lo, hi] = zone.r;
+          dots.push({
+            r: earthR * (lo + Math.random() * (hi - lo)),
+            angle: Math.random() * Math.PI * 2,
+            speed: (2 * Math.PI / zone.lap) * (0.9 + Math.random() * 0.2),
+            color: GROUPS[key].color
+          });
+        }
+      }
+    }
+    showRings = true;
+  }
+
+  function drawRings(c) {
+    ctx.save();
+    ctx.setLineDash([4, 6]);
+    ctx.lineWidth = 1;
+    ctx.strokeStyle = "rgba(255, 255, 255, 0.28)";
+    ctx.fillStyle = "rgba(255, 255, 255, 0.75)";
+    ctx.font = "600 11px system-ui, sans-serif";
+    ctx.textAlign = "center";
+    for (const zone of Object.values(ZONES)) {
+      if (!zone.ring) continue;
+      const r = earthR * zone.r[1];
+      ctx.beginPath();
+      ctx.arc(c, c, r, 0, Math.PI * 2);
+      ctx.stroke();
+      ctx.fillText(zone.ring, c, c - r - 4);
+    }
+    ctx.restore();
+  }
+
   function drawEarth(c, dt) {
     ctx.save();
     ctx.beginPath();
@@ -173,6 +236,7 @@
     const c = canvasW / 2;
     ctx.clearRect(0, 0, canvasW, canvasW);
 
+    if (showRings) drawRings(c);
     drawEarth(c, dt);
 
     for (const d of dots) {
@@ -236,7 +300,24 @@
     statEl.innerHTML =
       `About <strong>${total.toLocaleString()}</strong> tracked objects circle Earth. ` +
       `Only <strong>${pct}%</strong> are working satellites.`;
-    scaleEl.textContent = `Each dot = ${perDot.toLocaleString()} real object${perDot === 1 ? "" : "s"}.`;
+    const byZone = d.by_zone;
+    scaleEl.textContent = `Each dot = ${perDot.toLocaleString()} real object${perDot === 1 ? "" : "s"}.` +
+      (byZone ? " Each dot sits in its real orbit zone, but distances are not to scale." : "");
+
+    // Orbit zone summary
+    zonesEl.innerHTML = "";
+    if (byZone) {
+      for (const [zoneName, zone] of Object.entries(ZONES)) {
+        const z = byZone[zoneName];
+        if (!z || !z.total) continue;
+        const li = document.createElement("li");
+        const title = document.createElement("strong");
+        title.textContent = zone.name;
+        const debrisPct = Math.round(((z.Debris || 0) / z.total) * 100);
+        li.append(title, ` · ${zone.desc}: ${z.total.toLocaleString()} objects, ${debrisPct}% debris`);
+        zonesEl.appendChild(li);
+      }
+    }
 
     // Overview legend
     legendEl.innerHTML = "";
@@ -260,7 +341,10 @@
 
     // What Astro says on each tab
     lines = {
-      overview: `Look at all this! Only ${pct} percent of the things going around Earth are working satellites. Most of the rest is space junk!`,
+      overview: `Look at all this! Only ${pct} percent of the things going around Earth are working satellites. Most of the rest is space junk!` +
+        (byZone?.LEO && counts.Debris && byZone.LEO.Debris / counts.Debris > 0.5
+          ? " And most of the junk is in low Earth orbit, close to us."
+          : ""),
       sources: sources.length
         ? `The biggest source of space junk is ${sources[0].label}. It left ${sources[0].value.toLocaleString()} pieces that are still going around Earth!`
         : "",
@@ -271,7 +355,8 @@
     };
 
     sizeCanvas();
-    makeDots(counts, perDot);
+    if (byZone) makeZoneDots(byZone, perDot);
+    else makeDots(counts, perDot); // older data without zones: random placement
   }
 
   // =====================================================

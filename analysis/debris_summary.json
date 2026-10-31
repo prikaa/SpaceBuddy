@@ -378,7 +378,7 @@
       "pieces": 2314
     },
     {
-      "name": "YUNHAI-3 01",
+      "name": "CZ-6A",
       "launch_id": "2022-151",
       "pieces": 612
     },
@@ -388,7 +388,7 @@
       "pieces": 609
     },
     {
-      "name": "QIANFAN-1",
+      "name": "CZ-6A",
       "launch_id": "2024-140",
       "pieces": 573
     },
@@ -403,12 +403,12 @@
       "pieces": 353
     },
     {
-      "name": "NIMBUS 4",
+      "name": "THORAD AGENA D",
       "launch_id": "1970-025",
       "pieces": 262
     },
     {
-      "name": "NIMBUS 6",
+      "name": "DELTA 1",
       "launch_id": "1975-052",
       "pieces": 219
     }
@@ -420,5 +420,47 @@
     "FR": 350,
     "ITSO": 49,
     "JPN": 35
+  },
+  "by_zone": {
+    "GEO": {
+      "Debris": 46,
+      "Rocket bodies": 149,
+      "Satellites": 1217,
+      "Unknown": 0,
+      "working": 625,
+      "total": 1412
+    },
+    "High / elliptical": {
+      "Debris": 2105,
+      "Rocket bodies": 868,
+      "Satellites": 434,
+      "Unknown": 0,
+      "working": 71,
+      "total": 3407
+    },
+    "LEO": {
+      "Debris": 9851,
+      "Rocket bodies": 995,
+      "Satellites": 18062,
+      "Unknown": 51,
+      "working": 16430,
+      "total": 28959
+    },
+    "MEO": {
+      "Debris": 360,
+      "Rocket bodies": 233,
+      "Satellites": 447,
+      "Unknown": 1,
+      "working": 186,
+      "total": 1041
+    },
+    "Unknown": {
+      "Debris": 178,
+      "Rocket bodies": 54,
+      "Satellites": 98,
+      "Unknown": 2,
+      "working": 48,
+      "total": 332
+    }
   }
 }

@@ -10,6 +10,7 @@ Needs:  pip install pandas
 """
 
 import json
+import numpy as np
 import pandas as pd
 
 # ---------------------------------------------------------------
@@ -41,7 +42,24 @@ df["TYPE"] = df["OBJECT_TYPE"].map(TYPE_LABELS).fillna("Unknown")
 # identify the LAUNCH. Every fragment from the same parent shares this prefix.
 df["LAUNCH_ID"] = df["OBJECT_ID"].str[:8]
 
-in_orbit = df[df["IN_ORBIT"]]
+in_orbit = df[df["IN_ORBIT"]].copy()
+
+# Orbit zone, from the lowest (PERIGEE) and highest (APOGEE) point in km.
+#   LEO: whole orbit below 2,000 km
+#   GEO: near-circular around 35,786 km (within 500 km)
+#   MEO: between LEO and GEO
+#   High / elliptical: everything else (stretched orbits, or above GEO)
+GEO_KM = 35786
+p_km = pd.to_numeric(in_orbit["PERIGEE"], errors="coerce")
+a_km = pd.to_numeric(in_orbit["APOGEE"], errors="coerce")
+in_orbit["ZONE"] = np.select(
+    [p_km.isna() | a_km.isna(),
+     a_km < 2000,
+     (p_km >= GEO_KM - 500) & (a_km <= GEO_KM + 500),
+     (p_km >= 2000) & (a_km < GEO_KM - 500)],
+    ["Unknown", "LEO", "GEO", "MEO"],
+    default="High / elliptical",
+)
 
 # ---------------------------------------------------------------
 # 3. ANALYZE
@@ -81,6 +99,10 @@ def source_name(launch_id):
 # Q4: Who owns the debris still in orbit?
 debris_by_owner = debris_now["OWNER"].value_counts().head(6)
 
+# Q5: Where is everything? Objects in each orbit zone, by type.
+by_zone = in_orbit.groupby(["ZONE", "TYPE"]).size().unstack(fill_value=0)
+working_by_zone = working["ZONE"].value_counts()
+
 # ---------------------------------------------------------------
 # 4. REPORT (read these and turn them into your pitch!)
 # ---------------------------------------------------------------
@@ -95,6 +117,9 @@ for launch_id, count in top_sources.items():
 
 print("\n=== Debris in orbit by owner ===")
 print(debris_by_owner.to_string())
+
+print("\n=== Objects by orbit zone ===")
+print(by_zone.to_string())
 
 # ---------------------------------------------------------------
 # 5. EXPORT a small JSON for the website (never ship the full CSV to the browser)
@@ -112,6 +137,14 @@ summary = {
         for lid, c in top_sources.items()
     ],
     "debris_by_owner": {k: int(v) for k, v in debris_by_owner.items()},
+    "by_zone": {
+        zone: {
+            **{t: int(n) for t, n in by_zone.loc[zone].items()},
+            "working": int(working_by_zone.get(zone, 0)),
+            "total": int(by_zone.loc[zone].sum()),
+        }
+        for zone in by_zone.index
+    },
 }
 
 with open("debris_summary.json", "w") as f:
