@@ -42,7 +42,7 @@
     <div id="solar-system"></div>
   </section>
 
-  <!-- NEW: SPACE TECH SCREEN -->
+  <!-- SPACE TECH SCREEN -->
   <section id="space-tech-screen" class="screen" hidden>
 
     <header class="space-tech-header">
@@ -77,11 +77,11 @@
           OBSERVATION
         </p>
 
-        <h2>Telescopes</h2>
+        <h2>Telescopes: Observing the Universe</h2>
 
         <p>
-          Telescopes help scientists observe distant stars,
-          galaxies, and other objects in space.
+          Telescopes collect light or other electromagnetic radiation
+          to help us observe distant stars, planets, and galaxies.
         </p>
 
         <button
@@ -99,12 +99,36 @@
           hidden
         >
 
-          <h3>Meet the James Webb Space Telescope!</h3>
+          <h3>Example: James Webb Space Telescope (JWST)</h3>
+
+          <h4>What Is It?</h4>
 
           <p>
-            The James Webb Space Telescope observes the universe
-            using infrared light. It helps scientists study distant
-            galaxies and learn more about how stars and planets form.
+            A telescope is an instrument that collects light or other
+            electromagnetic radiation so scientists can observe distant
+            objects in space.
+          </p>
+
+          <h4>How Does It Work?</h4>
+
+          <p>
+            Telescopes gather light from stars, planets, and galaxies.
+            Scientists study this information to learn about objects
+            that are too far away to visit.
+          </p>
+
+          <h4>Why Is It Important?</h4>
+
+          <p>
+            Telescopes help scientists understand how stars and galaxies
+            form, discover planets, and learn about the history of
+            the universe.
+          </p>
+
+          <p class="tech-fun-fact">
+            ⭐ <strong>Fun Fact:</strong> The James Webb Space Telescope
+            can observe light that has traveled for more than 13 billion
+            years to reach us.
           </p>
 
         </div>
@@ -122,11 +146,11 @@
           SPACE TRANSPORTATION
         </p>
 
-        <h2>Rockets</h2>
+        <h2>Rockets: Reaching Space</h2>
 
         <p>
-          Rockets carry satellites, spacecraft, and scientific
-          instruments from Earth into space.
+          Rockets carry spacecraft, satellites, scientific instruments,
+          and astronauts from Earth into space.
         </p>
 
         <button
@@ -144,19 +168,40 @@
           hidden
         >
 
-          <h3>How Do Rockets Help Us?</h3>
+          <h3>Example: NASA's Space Launch System (SLS)</h3>
+
+          <h4>What Is It?</h4>
 
           <p>
-            Rockets produce thrust to overcome Earth's gravity.
-            They can carry spacecraft toward the Moon, other planets,
-            and destinations beyond Earth.
+            A rocket is a vehicle that uses powerful engines to carry
+            spacecraft, satellites, and sometimes astronauts into space.
+          </p>
+
+          <h4>How Does It Work?</h4>
+
+          <p>
+            Rockets release hot gases in one direction, producing thrust
+            that pushes the rocket in the opposite direction. This allows
+            rockets to travel through Earth's atmosphere and into space.
+          </p>
+
+          <h4>Why Is It Important?</h4>
+
+          <p>
+            Rockets allow scientists to send instruments into orbit,
+            explore other worlds, and carry astronauts on space missions.
+          </p>
+
+          <p class="tech-fun-fact">
+            ⭐ <strong>Fun Fact:</strong> Rockets do not need air to push
+            against, so they can work in the vacuum of space!
           </p>
 
         </div>
 
       </article>
 
-      <!-- CARD 3: SATELLITES -->
+      <!-- CARD 3: SATELLITES AND SPACECRAFT -->
       <article class="tech-card">
 
         <div class="tech-card-icon" aria-hidden="true">
@@ -164,14 +209,14 @@
         </div>
 
         <p class="tech-card-category">
-          CONNECTING EARTH
+          OBSERVING OUR PLANET
         </p>
 
-        <h2>Satellites</h2>
+        <h2>Satellites &amp; Spacecraft: Studying Space</h2>
 
         <p>
-          Satellites orbit Earth and help us with navigation,
-          weather forecasting, communication, and observing our planet.
+          Satellites and spacecraft collect information about Earth
+          and other objects in space.
         </p>
 
         <button
@@ -189,12 +234,35 @@
           hidden
         >
 
-          <h3>Satellites Are Everywhere!</h3>
+          <h3>Example: Landsat 9 Earth-Observation Satellite</h3>
+
+          <h4>What Is It?</h4>
 
           <p>
-            Satellites help navigation systems estimate locations,
-            allow communication over long distances, and collect
-            information about Earth's weather and environment.
+            An artificial satellite is a human-made object that orbits
+            Earth or another celestial body. Spacecraft are vehicles or
+            devices designed to operate in space.
+          </p>
+
+          <h4>How Does It Work?</h4>
+
+          <p>
+            Satellites use instruments, cameras, and sensors to collect
+            information. They can send scientific data and images back
+            to Earth.
+          </p>
+
+          <h4>Why Is It Important?</h4>
+
+          <p>
+            Satellites help us navigate, communicate, predict weather,
+            and monitor changes on our planet. Space probes also help
+            scientists explore distant planets and moons.
+          </p>
+
+          <p class="tech-fun-fact">
+            ⭐ <strong>Fun Fact:</strong> The Landsat satellite program
+            has been observing Earth's land from space since 1972.
           </p>
 
         </div>
@@ -252,7 +320,7 @@
     </div>
   </div>
 
-    <!-- SPACE JUNK VIEW (junk.js): opens from Earth's zoom view -->
+  <!-- SPACE JUNK VIEW (junk.js): opens from Earth's zoom view -->
   <div id="junk" class="junk" hidden>
     <div class="junk-card" role="dialog" aria-modal="true" aria-labelledby="junk-title">
       <h2 id="junk-title">🛰️ What's around Earth?</h2>
@@ -276,7 +344,7 @@
           <p class="junk-note">Each bar is one launch whose objects broke into pieces that are still in orbit. We grouped pieces by the launch they came from, because the catalog dates every fragment by its parent's launch, not by the day it broke apart.</p>
         </section>
 
-        <section id="panel-owners" class="junk-panel" role="tabpanel" aria-labelledby="tab-owners" hidden>
+        <section id="panel-owners" class="junk-panel" role="tabpanel" aria-labelledby="tab-owners" aria-selected="false" tabindex="-1" hidden>
           <ol id="junk-owners" class="junk-bars"></ol>
           <p class="junk-note">Debris still in orbit, by who owned the object it came from.</p>
         </section>
